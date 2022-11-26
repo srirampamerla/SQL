@@ -56,12 +56,13 @@ o.*, c.*
 from orders o
 right join customers c on o.cust_id = c.cust_id;
 
-# Cross Join
+# Cross Join cannot work in mysql
 -- select 
 -- o.*, c.*
 -- from orders o
 -- full outer join customers c;
-
+select o.*, c.* from orders o left join customers c on (o.cust_id = c.cust_id ) union select o.*, c.* from orders o
+right join customers c on (o.cust_id = c.cust_id);
 
 # How to join more than 2 datasets?
 # perform inner JOIN
