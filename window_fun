@@ -212,3 +212,101 @@ from (select *,
         dense_rank() over(partition by dept_name order by salary desc) as dense_rank_num
     from employees) tmp
 where tmp.dense_rank_num <= 2;
+
+
+-- Active: 1669534150260@@127.0.0.1@3306
+CREATE DATABASE sriram;
+
+use sriram;
+
+create table employees
+(
+    emp_id int,
+    salary int,
+    dept_name VARCHAR(30)
+
+);
+
+insert into employees values(1,10000,'Software');
+insert into employees values(2,11000,'Software');
+insert into employees values(3,11000,'Software');
+insert into employees values(4,11000,'Software');
+insert into employees values(5,15000,'Finance');
+insert into employees values(6,15000,'Finance');
+insert into employees values(7,15000,'IT');
+insert into employees values(8,12000,'HR');
+insert into employees values(9,12000,'HR');
+insert into employees values(10,11000,'HR');
+
+select dept_name,sum(salary) total from employees group by dept_name order by total;
+
+select * from employees;
+
+select *,row_number() over(partition by dept_name order by salary)row_num from employees;
+
+select *,row_number() over(partition by dept_name order by dept_name)row_num from employees;
+
+select *,row_number() over(order by salary)row_num from employees;
+
+select *,rank() over(order by salary)rank_num from employees;
+
+
+select *,dense_rank() over(order by salary)dense_rank_num from employees;
+
+select tmp.* from(select *,row_number() over(partition by dept_name order by dept_name)row_num from employees)tmp where tmp.row_num=1;
+
+select tmp.* from(select *,rank() over(partition by dept_name order by dept_name)rank_num from employees)tmp where tmp.rank_num=1;
+
+
+# Example for lag and lead
+create table daily_sales
+(
+sales_date date,
+sales_amount int
+);
+
+
+insert into daily_sales values('2022-03-11',400);
+insert into daily_sales values('2022-03-12',500);
+insert into daily_sales values('2022-03-13',300);
+insert into daily_sales values('2022-03-14',600);
+insert into daily_sales values('2022-03-15',500);
+insert into daily_sales values('2022-03-16',200);
+
+select sales_date,avg(sales_amount) aver from daily_sales group by sales_date;
+select sales_date,avg(sales_amount) total from daily_sales group by sales_date order by total;
+
+
+
+select sales_date,
+       sales_amount as curr_day_sales,
+       lag(sales_amount, 1) over(order by sales_date) as prev_day_sales
+from daily_sales;
+
+select sales_date,
+       sales_amount as curr_day_sales,
+       lag(sales_amount, 1) over(order by sales_date) as prev_day_sales,
+       sales_amount - lag(sales_amount, 1) over(order by sales_date) as sales_diff
+from daily_sales;
+
+# to avoid # Here we can replace null with 0
+select sales_date,
+       sales_amount as curr_day_sales,
+       lag(sales_amount, 1,0) over(order by sales_date) as prev_day_sales,
+       sales_amount - lag(sales_amount, 1,0) over(order by sales_date) as sales_diff
+from daily_sales;
+
+select *,
+       sales_amount as curr_day_sales,
+       lag(sales_amount, 1,0) over(order by sales_date) as prev_day_sales,
+       sales_amount - lag(sales_amount, 1,0) over(order by sales_date) as sales_diff
+from daily_sales;
+
+# Diff between lead and lag
+select *,
+      lag(sales_amount, 1) over(order by sales_date) as pre_day_sales
+from daily_sales;
+
+select *,
+      lead(sales_amount, 1) over(order by sales_date) as next_day_sales
+from daily_sales;
