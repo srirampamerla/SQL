@@ -1,0 +1,602 @@
+-- Active: 1673070555884@@127.0.0.1@3306
+CREATE DATABASE test;
+use test;
+# create a city
+Create table city(
+    id int,
+name varchar(17),
+countrycode varchar(3),
+district varchar(20),
+population int
+);
+
+# insert records into city
+insert into city values(6, 'Rotterdam', 'NLD', 'Zuid-Holland', 593321),
+(3878, 'Scottsdale', 'USA', 'Arizona', 202705),
+(3965, 'Corona', 'USA', 'California', 124966),
+(3973, 'Concord', 'USA', 'California', 121780),
+(3977, 'Cedar Rapids', 'USA', 'Iowa', 120758),
+(3982, 'Coral Springs', 'USA', 'Florida', 117549),
+(4054, 'Fairfield', 'USA', 'California', 92256),
+(4058, 'Boulder', 'USA', 'Colorado', 91238),
+(4061, 'Fall River', 'USA', 'Massachusetts', 90555);
+
+select * from city where countrycode = 'USA' and population > 100000;
+
+select * from city where countrycode = 'USA' and population > 120000;
+
+select * from city;
+
+select * from city where id = 1661;
+
+select * from city where countrycode = 'JPN';
+
+select name from city where countrycode = "JPN";
+
+create table station (
+id int,
+city varchar(21),
+state varchar(2),
+lat_n int,
+long_w int
+);
+
+Insert into station values
+(794,'Kissee Mills','MO',139,73),
+(824,'Loma Mar','CA',48,130),
+(603,'Sandy Hook','CT',72,148),
+(478,'Tipton','IN',33,97),
+(619,'Arlington','CO',75,92),
+(711,'Turner','AR',50,101),
+(839,'Slidell','LA',85,151),
+(411,'Negreet','LA',98,105),
+(588,'Glencoe','KY',46,136),
+(665,'Chelsea','IA',98,59),
+(342,'Chignik Lagoon','AK',103,153),
+(733,'Pelahatchie','MS',38,28),
+(441,'Hanna City','IL',50,136),
+(811,'Dorrance','KS',102,121),
+(698,'Albany','CA',49,80),
+(325,'Monument','KS',70,141),
+(414,'Manchester','MD',73,37),
+(113,'Prescott','IA',39,65),
+(971,'Graettinger','IA',94,150),
+(266,'Cahone','CO',116,127)
+;
+select city,state from station;
+
+select DISTINCT(city) from station where id%2=0;
+
+select count(city) - count(distinct(city)) as diff from station;
+
+select city,length(city) as len_city from station order by len_city desc,city asc limit 1;
+
+select city,length(city) as len_city from station order by len_city asc,city asc limit 1;
+
+select distinct(city) as d_city from station where city RLIKE '^[aeiou].*$';
+select distinct city from station where city Rlike '^[AEIOUaeiou].*$';
+
+select distinct(city) from station where REGEXP_LIKE(city,'^[aeiou]','i');
+
+select city from station where REGEXP_LIKE(city,'^[aeiou].*$');
+
+select distinct(city) from station where substr(city,1,1) in ('A','E','I','O','U','a','e','i','o','u');
+
+select city from station where REGEXP_LIKE(city,'^*.[aeiou]$');
+
+select city from station where REGEXP_LIKE(city,'[aeiou]$');
+
+select distinct city from station where city not Rlike '^[AEIOUaeiou].*$';
+
+select distinct city from station where city Rlike '^*.[AEIOUaeiou]$';
+
+select distinct city from station where city not Rlike '^*.[AEIOUaeiou]$';
+
+select distinct city from station where city not Rlike '^[AEIOUaeiou].*$' and city not Rlike '^*.[AEIOUaeiou]$';
+
+
+create table product
+(
+product_id int,
+product_name varchar(20),
+unit_price int,
+constraint pk_p_id primary key(product_id));
+insert into product values(1,'S8',1000),
+(2,'G4',800),
+(3,'IPhone',1400)
+
+
+create table sales(
+    seller_id int,
+    product_id int,
+    buyer_id int,
+    sale_date date,
+    quantity int,
+    price int,
+    constraint fk_pr_id foreign key(product_id) references product(product_id)
+
+);
+
+select p.product_id, p.product_name from product p inner join sales s on p.product_id=s.product_id
+group by p.product_id having min(sale_date) >='2019-01-01' and max(sale_date) <='2019-03-31';
+
+select p.product_id,p.product_name from product p
+      INNER JOIN sales s on
+      p.product_id =s.product_id group by p.product_id
+      having min(sale_date) >='2019-01-01' and max(sale_date) <='2019-03-31';
+
+insert into sales values(1,1,1,'2019-01-21',2,2000);     
+
+
+insert into sales values(1,2,2,'2019-02-17',1,800);  
+insert into sales values(2,2,3,'2019-06-02',1,800);  
+insert into sales values(3,3,4,'2019-05-13',2,2800);
+
+
+create table views (
+    article_id int,
+    author_id int,  
+    viewer_id int,   
+    view_date date  
+
+);
+
+insert into views values(1, 3, 5 ,'2019-08-01'),
+                        (1, 3, 6, '2019-08-02'),
+                        (2, 7, 7, '2019-08-01'),
+                        (2, 7, 6, '2019-08-02'),
+                        (4, 7, 1, '2019-07-22'),
+                        (3, 4, 4, '2019-07-21'),
+                        (3, 4, 4, '2019-07-21');
+
+select distinct author_id from views where author_id =viewer_id;
+create table delivery(
+    delivery_id int,  
+    customer_id int,   
+    order_date date,     
+    customer_pref_delivery_date date   ,
+    constraint pk_delivery PRIMARY KEY(delivery_id)
+);
+
+
+insert into delivery values 
+(1 ,1 ,'2019-08-01', '2019-08-02'),
+(2 ,5 ,'2019-08-02', '2019-08-02'),
+(3 ,1 ,'2019-08-11', '2019-08-11'),
+(4 ,3 ,'2019-08-24', '2019-08-26'),
+(5 ,4 ,'2019-08-21', '2019-08-22'),
+(6 ,2 ,'2019-08-11', '2019-08-13');
+
+select round(sum(case when order_date=customer_pref_delivery_date then 1 else 0 end)/count(*)*100,2) as 'immediate' from delivery;
+
+create table ads (
+    ad_id int,
+    user_id int,
+    action ENUM ('Clicked', 'Viewed', 'Ignored') ,
+    constraint pk_ads PRIMARY KEY(ad_id,user_id)
+);
+
+insert into ads values (1,1,'Clicked')
+,(2,2,'Clicked')
+,(3,3,'Viewed')
+,(5,5,'Ignored')
+,(1,7,'Ignored')
+,(2,7,'Viewed')
+,(3,5,'Clicked')
+,(1,4,'Viewed')
+,(2,11,'Viewed')
+,(1,2,'Clicked');
+
+select a.ad_id ,round(CASE when a.total_clicks+a.total_views =0 then 0
+                      else (a.total_clicks/(a.total_clicks+a.total_views))*100
+                      END,2) as ctr
+       from(select ad_id,
+              sum(CASE when action='Clicked' then 1 else 0 END) as total_clicks,
+              sum(CASE when action='Viewed' then 1 else 0 END) as total_views
+              from ads group by ad_id) as a order by ctr desc;
+
+create table employee(
+    employee_id int,
+    team_id int,
+    constraint pk_employee PRIMARY KEY(employee_id)
+);
+
+
+insert into employee value(1,8),
+                          (2,8),
+                          (3,8),
+                          (4,7),
+                          (5,9),
+                          (6,9);
+
+select employee_id , 
+       count(*) over(partition by team_id) as team_size
+    from employee order by team_size desc;	
+
+create table countries(
+    country_id int,
+    country_name varchar(50) ,
+    constraint pk_countries PRIMARY KEY(country_id)
+);
+
+create table weather(
+    country_id int,
+    weather_state int,
+    day date,
+    constraint pk_weather PRIMARY KEY(country_id,day)
+
+);
+insert into countries values(2,'USA'),
+                            (3,'Australia'),
+                            (7,'Peru'),
+                            (5,'China'),
+                            (8,'Morocco'),
+                             (9,'Spain');
+insert into weather values
+                  (2,15,'2019-11-01'),
+                  (2,12,'2019-10-28'),
+                  (2,12,'2019-10-27'),
+                  (3,-2,'2019-11-10'),
+                  (3,0,'2019-11-11'),
+                  (3,3,'2019-11-12'),
+                  (5,16,'2019-11-07'),
+                  (5,18,'2019-11-09'),
+                  (5,21,'2019-11-23'),
+                  (7,25,'2019-11-28'),
+                  (7,22,'2019-12-01'),
+                  (7,20,'2019-12-02'),
+                  (8,25,'2019-11-05'),
+                  (8,27,'2019-11-15'),
+                  (8,31,'2019-11-25'),
+                  (9,7,'2019-10-23'),
+                  (9,3,'2019-12-23');
+select c.country_name,
+case when avg(w.weather_state)<=15 then 'cold'
+when avg(w.weather_state) >=25 then 'Hot'
+else 'warm'
+end as weather_type
+FROM countries c inner join (select * from weather where year(day)=2019 and month(day)=11)as w 
+on c.country_id=w.country_id group by w.country_id;
+
+create table prices(
+             product_id int,
+             start_date date,
+             end_date date,
+             price int,
+             constraint pk_prices PRIMARY KEY(product_id, start_date, end_date)
+
+);
+
+
+
+create table unitssold(
+             product_id int,
+             purchase_date date,  
+             units int
+);
+
+
+insert into prices values (1, '2019-02-17', '2019-02-28', 5),
+                          (1, '2019-03-01', '2019-03-22' ,20),
+                          (2, '2019-02-01', '2019-02-20' ,15),
+                          (2, '2019-02-21' ,'2019-03-31', 30);
+
+insert into unitssold values (1, '2019-02-25' ,100),
+                             (1, '2019-03-01' ,15),
+                             (2, '2019-02-10' ,200),
+                             (2, '2019-03-22' ,30);
+select p.product_id,round( sum(u.units*p.price) / 
+                sum(u.units),2) 
+                from prices p inner join unitssold u on p.product_id=u.product_id and purchase_date between p.start_date and p.end_date
+group by p.product_id;
+
+select p.product_id, 
+       round( sum(u.units*p.price) /
+              sum(u.units),2)
+    from prices p                   
+                inner join 
+    unitssold u  
+    on u.purchase_date BETWEEN  p.start_date and p.end_date 
+    and p.product_id =u.product_id
+    group by p.product_id
+       ;     
+
+create table activity(
+             player_id int,
+             device_id int,
+             event_date date,
+             games_played int,
+             constraint pk_activity PRIMARY KEY (player_id, event_date)
+);
+
+
+
+
+insert into activity values(1,2,'2016-03-01',5),
+                            (1,2,'2016-05-02',6),
+                            (2,3,'2017-06-25',1),
+                            (3,1,'2016-03-02',0),
+                            (3,4,'2018-07-03',5);
+
+select player_id,event_date,rank() over(partition by player_id order by event_date)from activity where rnk=1;
+
+SELECT player_id ,min(event_date) from
+     activity group by player_id;
+
+SELECT distinct player_id,
+       FIRST_VALUE(event_date)  over(partition by player_id order by event_date) as first_login
+       from activity
+     ;  
+SELECT distinct player_id,
+       FIRST_VALUE(device_id)  over(partition by player_id order by device_id) as first_device
+       from activity
+     ;
+create table products
+(product_id int,
+product_name varchar(50),
+product_category varchar(50),
+constraint pk_products PRIMARY KEY(product_id)
+);
+
+create table orders(
+product_id int,
+order_date date,
+unit int
+
+);
+
+insert into products values
+(1 ,'Leetcode Solutions', 'Book'),
+(2 ,'Jewels of Stringology', 'Book'),
+(3 ,'HP', 'Laptop'),
+(4 ,'Lenovo', 'Laptop'),
+(5 ,'Leetcode Kit', 'T-shirt');
+
+
+insert into orders values(1,'2020-02-05',60)
+,(1,'2020-02-10',70)
+,(2,'2020-01-18',30)
+,(2,'2020-02-11',80)
+,(3,'2020-02-17',2)
+,(3,'2020-02-24',3)
+,(4,'2020-03-01',20)
+,(4,'2020-03-04',30)
+,(4,'2020-03-04',60)
+,(5,'2020-02-25',50)
+,(5,'2020-02-27',50)
+,(5,'2020-03-01',50)
+;
+
+select tmp.* from(select p.product_name,sum(o.unit)as total from products p inner join orders o on p.product_id=o.product_id
+where year(order_date)=2020 and month(order_date)=02
+group by p.product_id) as tmp where total>=100;
+	 
+create table users(
+ user_id int,
+name varchar(30),
+mail varchar(50),
+constraint pkk primary key(user_id)
+);
+
+insert into users values
+(1, 'Winston' ,'winston@leetcode.com'),
+(2, 'Jonathan' ,'jonathanisgreat'),
+(3, 'Annabelle' ,'bella-@leetcode.com'),
+(4, 'Sally' ,'sally.come@leetcode.com'),
+(5, 'Marwan' ,'quarz#2020@leetcode.com'),
+(6, 'David' ,'david69@gmail.com'),
+(7, 'Shapiro' ,'.shapo@leetcode.com');
+
+select * from users where mail REGEXP '^[a-zA-Z]+[a-zA-Z0-9_./-]*@leetcode.com$' order by user_id;
+drop table orders;
+
+create table customers
+(customer_id int,
+name varchar(30),
+country varchar(30),
+primary key(customer_id)
+);
+
+create table orders
+(
+order_id int,
+customer_id int,
+product_id int,
+order_date date,
+quantity int,
+primary key(order_id)
+);
+
+create table product1
+(
+product_id int,
+description varchar(30),
+price int,
+primary key(product_id)
+);
+drop table product;
+
+
+insert into customers values
+(1, 'Winston' ,'USA'),
+(2, 'Jonathan', 'Peru'),
+(3, 'Moustafa' ,'Egypt');
+
+
+insert into product1 values
+(10 ,'LC Phone' ,300),
+(20 ,'LC T-Shirt' ,10),
+(30 ,'LC Book' ,45),
+(40 ,'LC Keychain' ,2);
+
+insert into orders values
+ (1, 1 ,10 ,'2020-06-10' ,1),
+(2 ,1 ,20 ,'2020-07-01' ,1),
+(3 ,1 ,30 ,'2020-07-08' ,2),
+(4 ,2 ,10 ,'2020-06-15' ,2),
+(5 ,2 ,40 ,'2020-07-01' ,10),
+(6 ,3 ,20 ,'2020-06-24' ,2),
+(7 ,3 ,30 ,'2020-06-25' ,2),
+(9 ,3 ,30, '2020-05-08', 3);
+
+select c.customer_id,c.name from customers c,orders o,product1 p where c.customer_id=o.customer_id and o.product_id=p.product_id
+group by c.customer_id having (sum(case when o.order_date like '2020-06%'then o.quantity*p.price else 0 end))>=100 AND
+sum(case when o.order_date like '2020-07%'then o.quantity*p.price else 0 end)>=100;
+
+select o.customer_id, c.name
+from customers c inner join orders o on c.customer_id = o.customer_id
+inner join product1 p on p.product_id = o.product_id
+group by o.customer_id
+having(
+    sum(case when o.order_date like '2020-06%' then o.quantity *p.price else 0 end) >= 100
+    and sum(case when o.order_date like '2020-07%' then o.quantity *p.price else 0 end) >= 100
+);
+
+with cte as(
+select o.customer_id,c.name,sum(price*quantity) as month_spend,month(order_date) as month
+from orders o inner join product1 p on o.product_id=p.product_id inner join customers c on o.customer_id=c.customer_id
+where year(o.order_date)=2020 and month(o.order_date) in(6,7)
+group by customer_id,month(order_date)
+)select customer_id,name from cte where month_spend>=100 group by customer_id having count(*)=2;
+select price from product1;
+
+select o.customer_id, c.name
+from customers c inner join orders o on c.customer_id = o.customer_id
+inner join product1 p on p.product_id = o.product_id
+group by o.customer_id
+having(
+    sum(case when o.order_date like '2020-06%' then o.quantity *p.price else 0 end) >= 100
+    and sum(case when o.order_date like '2020-07%' then o.quantity *p.price else 0 end) >= 100
+);
+drop table CONTEN;
+CREATE TABLE tv 
+(
+program_date date,
+content_id int,
+channel varchar(30),
+PRIMARY KEY (program_date, content_id));
+
+CREATE  TABLE content
+(
+content_id varchar(20),
+title varchar(20),
+Kids_content enum('N','Y'),
+content_type varchar(20),
+PRIMARY KEY(content_id)
+);
+
+INSERT INTO tv VALUES
+('2020-06-10 08:00' ,1 ,'LC-Channel'),
+('2020-05-11 12:00' ,2 ,'LC-Channel'),
+('2020-05-12 12:00' ,3 ,'LC-Channel'),
+('2020-05-13 14:00' ,4, 'Disney Ch'),
+('2020-06-18 14:00' ,4 ,'Disney Ch'),
+('2020-07-15 16:00' ,5, 'Disney Ch');
+
+INSERT INTO content VALUES
+(1, 'Leetcode Movie' ,'N', 'Movies'),
+(2, 'Alg. for Kids' ,'Y' ,'Series'),
+(3, 'Database Sols', 'N' ,'Series'),
+(4, 'Aladdin' ,'Y' ,'Movies'),
+(5, 'Cinderella', 'Y', 'Movies');
+select title from tv t inner join content c on t.content_id = c.content_id where Kids_content='Y' and program_date like '2020-06%';
+
+
+create table npv
+(
+id int,
+year int,
+npv int,
+primary key(id, year)
+);
+
+
+create table queries
+(
+id int,
+year int,
+primary key(id , year)
+);
+
+insert into npv values
+(1, 2018, 100),
+(7 ,2020 ,30),
+(13, 2019, 40),
+(1 ,2019 ,113),
+(2 ,2008 ,121),
+(3 ,2009 ,12),
+(11, 2020, 99),
+(7 ,2019, 0);
+
+insert into queries values
+(1 ,2019),
+(2 ,2008),
+(3 ,2009),
+(7 ,2018),
+(7 ,2019),
+(7 ,2020),
+(13 ,2019);
+truncate table queries;
+select q.id,q.year,n.npv from queries q inner join npv n on (q.id,q.year)=(n.id,n.year);
+
+create table employees
+(
+id int,
+name varchar(30),
+primary key(id)
+);
+
+create table emp_uni
+(
+id int,
+unique_id int,
+primary key(id, unique_id) 
+);
+
+insert into employees values
+(1 ,'Alice'),
+(7 ,'Bob'),
+(11 ,'Meir'),
+(90 ,'Winston'),
+(3 ,'Jonathan');
+
+insert into emp_uni values
+(3 ,1),
+(11 ,2),
+(90 ,3)
+;
+
+select u.unique_id,e.name from employees e left outer join emp_uni u on e.id=u.id order by name;
+
+create table user
+(
+id int,
+name varchar(20),
+primary key(id)
+);
+
+create table rides
+(
+id int,
+user_id int,
+distance int,
+primary key(id));
+
+insert into user values
+(1, 'Alice'),
+(2, 'Bob'),
+(3, 'Alex'),
+(4, 'Donald'),
+(7, 'Lee'),
+(13, 'Jonathan'),
+(19, 'Elvis')
+insert into  rides values
+(1, 1 ,120),
+(2 ,2 ,317),
+(3 ,3 ,222),
+(4 ,7 ,100),
+(5 ,13 ,312),
+(6 ,19 ,50),
+(7 ,7 ,120),
+(8 ,19, 400),
+(9 ,7 ,230)
