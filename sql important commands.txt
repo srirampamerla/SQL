@@ -6,13 +6,25 @@ into table sales1
 fields terminated by ','
 enclosed by '"'
 lines terminated by '\n'
-ignore 1 rows - It will help to dump the bulk data in the sql work bench
+ignore 1st row(which is the header) - It will help to dump the bulk data in the SQL workbench
 
-with the help of data we need to crate columns name automatically. we can do following steps.
-install anacondaprompt
-go to anaconda prompt
-go to specific drive where the dataset is present.
+with the help of data, we need to create columns name automatically. we can do the following steps.
+install the anaconda prompt and open it.
+go to the specific drive where the dataset is present.
 pip install csvkit
 
 csvsql --dialect mysql --snifflimit 100000 sales_data_final.csv > output_sales.sql
-this command automatically Create mysql table directly from CSV file using the CSV Storage engine. 
+this command automatically Creates a MySQL table directly from a CSV file using the CSV Storage engine. 
+
+select str_to_date(order_date,'%m/%d/%y') from sales1- to convert the varchar to date in specific format.
+alter table sales1 
+add column order_date_new  date after order_date
+
+update sales1
+set order_date_new = str_to_date(order_date,'%m/%d/%Y')
+
+alter table sales1
+add column ship_date_new date after ship_date
+
+update sales1 
+set ship_date_new = str_to_date(ship_date, '%m/%d/%Y')
